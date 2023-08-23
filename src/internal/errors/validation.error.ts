@@ -1,10 +1,8 @@
 import { ErrorBase } from '../pkg/error.base';
 
-export class ValueError extends ErrorBase {
+export class ValidationError implements ErrorBase {
   constructor(
     public message: string = 'Value error',
-    public data: string = null,
-  ) {
-    super();
-  }
+    public data: any[] = null,
+  ) {}
 }
