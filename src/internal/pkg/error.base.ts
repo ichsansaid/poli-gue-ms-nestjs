@@ -1,4 +1,4 @@
-export interface ErrorBase {
+export class ErrorBase {
   message: string;
   data?: any;
 }

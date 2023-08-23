@@ -1,6 +1,6 @@
 import { ValidationError } from 'class-validator';
 
-export async function validate(object: any) {
+export async function validate(object: any): Promise<ValidationError[]> {
   if (!(object instanceof Array)) {
     object = [object];
   }
