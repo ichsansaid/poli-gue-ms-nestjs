@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   AuthDataDto,
-  AuthSecret,
   BearerMetadataTokenDto,
   LoginDto,
 } from 'src/entities/dtos/auth/auth.dto';
@@ -83,7 +82,7 @@ export class BearerAuthService implements IAuthService<BearerMetadataTokenDto> {
   ): Promise<[AuthDataDto<BearerMetadataTokenDto>, ErrorBase]> {
     try {
       const payload = await this.jwt_service.verifyAsync(token, {
-        secret: AuthSecret,
+        secret: this.auth_config.auth_secret,
       });
       if (payload == null || payload == undefined) {
         return [, new UnauthorizedError()];

@@ -20,6 +20,15 @@ export class PoliObatService implements IPoliObatService {
     private readonly poli_obat_repo: PoliObatRepository,
     private readonly string_util: IStringUtil,
   ) {}
+  async deletePoliObatBy(
+    inquiry: InquiryPoliObatDto,
+  ): Promise<[IPoliObatSchema, ErrorBase]> {
+    if (inquiry == null || Object.keys(inquiry).length == 0) {
+      return [null, null];
+    }
+    await this.poli_obat_repo.delete(inquiry);
+    return [null, null];
+  }
   async checkInquiryExist<T extends InquiryPoliObatDto>(
     inquiry: T,
     columns: (keyof T)[],

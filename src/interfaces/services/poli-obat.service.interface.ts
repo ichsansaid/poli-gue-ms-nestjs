@@ -15,6 +15,9 @@ export abstract class IPoliObatService {
   abstract deletePoliObatById(
     inquiry: InquiryPoliObatDto,
   ): Promise<[IPoliObatSchema, ErrorBase]>;
+  abstract deletePoliObatBy(
+    inquiry: InquiryPoliObatDto,
+  ): Promise<[IPoliObatSchema, ErrorBase]>;
   abstract findById(
     inquiry: InquiryPoliObatDto,
   ): Promise<[IPoliObatSchema, ErrorBase]>;

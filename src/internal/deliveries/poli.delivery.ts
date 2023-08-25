@@ -32,7 +32,7 @@ export class PoliDelivery implements IPoliDelivery {
     });
     const [, error_create] = await this.poli_service.createPoli(poli_schema);
     if (error_create != null) {
-      return [, error_create];
+      throw error_create;
     }
     return [
       {
@@ -49,7 +49,7 @@ export class PoliDelivery implements IPoliDelivery {
       id: inquiry.id,
     });
     if (error_inquiry != null) {
-      return [null, error_inquiry];
+      throw error_inquiry;
     }
     if (!data_poli) {
       throw new NotFoundError('Poli tidak ditemukan');
@@ -68,7 +68,7 @@ export class PoliDelivery implements IPoliDelivery {
   ): Promise<[Box<IPoliSchema[]>, ErrorBase]> {
     const [results, error] = await this.poli_service.inquiry(inquiry);
     if (error != null) {
-      return [, error];
+      throw error;
     }
     return [
       {
@@ -84,20 +84,20 @@ export class PoliDelivery implements IPoliDelivery {
   ): Promise<[Box<IPoliSchema>, ErrorBase]> {
     const [poli, error] = await this.poli_service.findById(inquiry);
     if (error != null) {
-      return [, error];
+      throw error;
     }
     const diff = await this.object_utils.getDifferentValue(poli, data);
-    const [savedPoli, errorSave] = await this.poli_service.updatePoliById(
+    const [saved_poli, error_save] = await this.poli_service.updatePoliById(
       poli.id,
       diff,
     );
-    if (errorSave != null) {
-      return [, errorSave];
+    if (error_save != null) {
+      throw error_save;
     }
     return [
       {
         message: 'Poli berhasil diperbaharui',
-        data: savedPoli,
+        data: saved_poli,
       },
       null,
     ];

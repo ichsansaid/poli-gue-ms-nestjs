@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
-import { StringUtilsModule } from '../utils/string.utils.module';
-import { UserServiceModule } from '../user/user.service.module';
+import { StringUtilsModule } from '../../utils/string.utils.module';
+import { UserServiceModule } from '../../user/user.service.module';
 import { AuthSecret, AuthTypeEnum } from 'src/entities/dtos/auth/auth.dto';
-import { BearerAuthService } from 'src/internal/services/auth/bearer-auth-verify.service';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthConfig } from 'src/entities/config/auth.config';
 
@@ -17,8 +16,10 @@ import { AuthConfig } from 'src/entities/config/auth.config';
   controllers: [],
   providers: [
     {
-      provide: AuthTypeEnum.BEARER,
-      useClass: BearerAuthService,
+      provide: AuthTypeEnum.BASIC,
+      useFactory() {
+        return null;
+      },
     },
     {
       provide: AuthConfig,
@@ -28,6 +29,6 @@ import { AuthConfig } from 'src/entities/config/auth.config';
       },
     },
   ],
-  exports: [AuthTypeEnum.BEARER],
+  exports: [AuthTypeEnum.BASIC],
 })
-export class BearerAuthServiceModule {}
+export class BasicAuthServiceModule {}

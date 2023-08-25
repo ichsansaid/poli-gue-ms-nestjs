@@ -10,7 +10,7 @@ export abstract class IObatService {
   ): Promise<[IObatSchema, ErrorBase]>;
   abstract deleteObatById(
     inquiry: InquiryObatDto | InquiryObatDto[],
-  ): Promise<[IObatSchema, ErrorBase]>;
+  ): Promise<[IObatSchema | IObatSchema[], ErrorBase]>;
   abstract findById(inquiry: InquiryObatDto): Promise<[IObatSchema, ErrorBase]>;
   abstract findByNamaObat(
     inquiry: InquiryObatDto,

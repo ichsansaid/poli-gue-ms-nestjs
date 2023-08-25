@@ -6,6 +6,7 @@ import { IStringUtil } from 'src/interfaces/utils/string.util.interface';
 import { ValueError } from 'src/internal/errors/value.error';
 import { ErrorBase } from 'src/internal/pkg/error.base';
 import { ObatRepository } from 'src/internal/repositories/typeorm/obat.repository';
+import { In } from 'typeorm';
 
 @Injectable()
 export class ObatService implements IObatService {
@@ -41,16 +42,30 @@ export class ObatService implements IObatService {
   }
   async deleteObatById(
     inquiry: InquiryObatDto | InquiryObatDto[],
-  ): Promise<[IObatSchema, ErrorBase]> {
+  ): Promise<[IObatSchema | IObatSchema[], ErrorBase]> {
     if (!(inquiry instanceof Array)) {
       inquiry = [inquiry];
     }
+    const ids = [];
     for (const inq of inquiry) {
       if (inq.id == null) {
         return [, new ValueError('Id harus di assign pada inquiry obat dto')];
       }
+      ids.push(inq.id);
     }
-    throw new Error('Method not implemented.');
+    const inquiry_obat: IObatSchema[] = await this.obat_repo.find({
+      where: {
+        id: In(ids),
+      },
+    });
+    if (inquiry_obat.length != ids.length) {
+      return [, new ValueError('Ada beberapa data yang tidak ditemukan')];
+    }
+    const result = await this.obat_repo.delete(ids);
+    if (result.affected == 0) {
+      return [null, null];
+    }
+    return [inquiry_obat, null];
   }
   async findById(inquiry: InquiryObatDto): Promise<[IObatSchema, ErrorBase]> {
     if (inquiry.id == null) {
