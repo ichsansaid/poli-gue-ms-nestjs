@@ -10,7 +10,7 @@ export enum PoliPasienStatus {
 
 export class InquiryPoliPasienDto {
   id?: any;
-  obat_id?: any;
+  pasien_id?: any;
   poli_id?: any;
 }
 
@@ -19,9 +19,9 @@ export class CreatePoliPasienDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  nama_pasien: string;
+  nama_lengkap: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  alamat: number;
+  alamat: string;
 }

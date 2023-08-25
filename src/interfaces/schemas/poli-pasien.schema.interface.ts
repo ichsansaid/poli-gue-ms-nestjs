@@ -4,13 +4,13 @@ import { IPoliSchema } from './poli.schema.interface';
 import { IDokterSchema } from './dokter.schema.interface';
 
 export abstract class IPoliPasienSchema {
-  id: any;
+  id?: any;
   pasien_id: any;
   poli_id: any;
-  dokter_id: any;
-  arrived_at: Date;
-  finished_at: Date;
-  status: PoliPasienStatus;
+  dokter_id?: any;
+  arrived_at?: Date;
+  finished_at?: Date;
+  status?: PoliPasienStatus;
 
   pasien?: IPasienSchema;
   poli?: IPoliSchema;
