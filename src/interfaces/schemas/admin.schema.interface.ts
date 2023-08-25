@@ -1,7 +1,7 @@
-import { EntityBase } from 'src/internal/pkgs/schema.base';
+import { EntityBase } from 'src/internal/pkg/schema.base';
 import { IUserSchema } from './user.schema.interface';
 
-export abstract class IAdminSchema extends EntityBase {
+export class IAdminSchema extends EntityBase<IAdminSchema> {
   id: any;
   user_id: any;
   user: IUserSchema;

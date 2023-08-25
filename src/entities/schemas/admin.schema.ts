@@ -3,11 +3,11 @@ import { IUserSchema } from 'src/interfaces/schemas/user.schema.interface';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('admin')
-export class AdminSchema implements IAdminSchema {
+export class AdminSchema extends IAdminSchema {
   @PrimaryGeneratedColumn('uuid')
   id: any;
 
-  @Column()
+  @Column('uuid')
   user_id: any;
 
   user: IUserSchema;

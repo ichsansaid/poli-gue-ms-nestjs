@@ -3,11 +3,11 @@ import { IUserSchema } from 'src/interfaces/schemas/user.schema.interface';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('apoteker')
-export class ApotekerSchema implements IApotekerSchema {
+export class ApotekerSchema extends IApotekerSchema {
   @PrimaryGeneratedColumn('uuid')
   id: any;
 
-  @Column()
+  @Column('uuid')
   user_id: any;
 
   user: IUserSchema;

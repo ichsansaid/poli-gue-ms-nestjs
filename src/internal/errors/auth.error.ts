@@ -62,3 +62,12 @@ export class UnauthorizedError extends ErrorBase {
     super();
   }
 }
+
+export class ForbiddenError extends ErrorBase {
+  constructor(
+    public message: string = "You don't have permissions",
+    public data: string = null,
+  ) {
+    super();
+  }
+}
