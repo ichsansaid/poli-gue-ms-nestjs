@@ -7,14 +7,6 @@ export class InquiryPoliObatDto {
   poli_id?: any;
 }
 
-export class ObatStokInDto {
-  quantity: number;
-}
-
-export class ObatStokOutDto {
-  quantity: number;
-}
-
 export class CreatePoliObatDto {
   poli_id: any;
 

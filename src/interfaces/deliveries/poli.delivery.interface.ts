@@ -6,12 +6,6 @@ import {
 import { IPoliSchema } from '../schemas/poli.schema.interface';
 import { Box } from 'src/internal/pkg/box.base';
 import { ErrorBase } from 'src/internal/pkg/error.base';
-import {
-  InquiryPoliObatDto,
-  ObatStokInDto,
-  ObatStokOutDto,
-} from 'src/entities/dtos/poli-obat/poli-obat.dto';
-import { IPoliObatStokInSchema } from '../schemas/poli-obat-stok.schema.interface';
 
 export abstract class IPoliDelivery {
   abstract createPoli(
@@ -27,12 +21,4 @@ export abstract class IPoliDelivery {
     inquiry: InquiryPoliDto,
     data: UpdatePoliDto,
   ): Promise<[Box<IPoliSchema>, ErrorBase]>;
-}
-
-export abstract class IPoliStokDelivery {
-  abstract createStokInObat(
-    inquiry: InquiryPoliObatDto,
-    stok: ObatStokInDto,
-  ): Promise<[IPoliObatStokInSchema, ErrorBase]>;
-  abstract createStokOutObat(inquiry: InquiryPoliObatDto, stok: ObatStokOutDto);
 }
