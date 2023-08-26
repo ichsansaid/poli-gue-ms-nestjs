@@ -158,7 +158,6 @@ export class PoliObatService implements IPoliObatService {
   async findByPoliId(
     inquiry: InquiryPoliObatDto | InquiryPoliObatDto[],
   ): Promise<[IPoliObatSchema[], ErrorBase]> {
-    console.log(!(inquiry instanceof Array));
     if (!(inquiry instanceof Array)) {
       inquiry = [inquiry];
     }

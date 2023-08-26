@@ -4,7 +4,7 @@ import { IApotekerSchema } from '../schemas/apoteker.schema.interface';
 import { IDokterSchema } from '../schemas/dokter.schema.interface';
 import { IKasirSchema } from '../schemas/kasir.schema.interface';
 import { IUserSchema } from '../schemas/user.schema.interface';
-import { InquiryUserDto } from 'src/entities/dtos/user/user.dto';
+import { EnumUserType, InquiryUserDto } from 'src/entities/dtos/user/user.dto';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -24,7 +24,7 @@ export abstract class IUserService {
     inquiry: InquiryUserDto,
   ): Promise<[IUserSchema, ErrorBase]>;
   abstract inquiry(
-    inquiry: InquiryUserDto,
+    inquiry: InquiryUserDto | InquiryUserDto[],
   ): Promise<[IUserSchema[], ErrorBase]>;
   abstract saveToDokter(user: IUserSchema): Promise<[IDokterSchema, ErrorBase]>;
   abstract saveToApoteker(
@@ -41,4 +41,13 @@ export abstract class IUserService {
     user: IUserSchema,
     password: string,
   ): Promise<[boolean, ErrorBase]>;
+  abstract findUserTypeByIds(
+    user_type: EnumUserType,
+    inquiry: InquiryUserDto[],
+  ): Promise<
+    [
+      IDokterSchema[] | IAdminSchema[] | IApotekerSchema[] | IKasirSchema[],
+      ErrorBase,
+    ]
+  >;
 }

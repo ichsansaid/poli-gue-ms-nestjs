@@ -7,11 +7,15 @@ import { PasienRepoModule } from '../pasien/pasien.repo.module';
 import { PoliRepoModule } from '../poli/poli.repo.module';
 import { DokterRepoModule } from '../dokter/dokter.repo.module';
 import { UserRepoModule } from '../user/user.repo.module';
+import { UserServiceModule } from '../user/user.service.module';
+import { PoliUserRepoModule } from '../poli-user/poli-user.repo.module';
 
 @Module({
   imports: [
+    UserServiceModule,
     StringUtilsModule,
     PoliPasienRepoModule,
+    PoliUserRepoModule,
     PasienRepoModule,
     PoliRepoModule,
     DokterRepoModule,

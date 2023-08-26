@@ -162,7 +162,6 @@ export class PoliTindakanService implements IPoliTindakanService {
   async findByPoliId(
     inquiry: InquiryPoliTindakanDto | InquiryPoliTindakanDto[],
   ): Promise<[IPoliTindakanSchema[], ErrorBase]> {
-    console.log(!(inquiry instanceof Array));
     if (!(inquiry instanceof Array)) {
       inquiry = [inquiry];
     }

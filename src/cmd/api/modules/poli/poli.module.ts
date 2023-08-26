@@ -7,13 +7,17 @@ import { PoliObatDeliveryModule } from '../poli-obat/poli-obat.delivery.module';
 import { BearerAuthServiceModule } from '../auth/verify/bearer-auth-verify.service.module';
 import { PoliPasienDeliveryModule } from '../poli-pasien/poli-pasien.delivery.module';
 import { PoliTindakanDeliveryModule } from '../poli-tindakan/poli-tindakan.delivery.module';
+import { PoliUserDeliveryModule } from '../poli-user/poli-user.delivery.module';
+import { PoliPasienTindakanDeliveryModule } from '../poli-pasien-tindakan/poli-pasien-tindakan.delivery.module';
 
 @Module({
   imports: [
     PoliDeliveryModule,
     PoliObatDeliveryModule,
     PoliPasienDeliveryModule,
+    PoliUserDeliveryModule,
     PoliTindakanDeliveryModule,
+    PoliPasienTindakanDeliveryModule,
     BearerAuthServiceModule,
     AuthRoleServiceModule,
   ],

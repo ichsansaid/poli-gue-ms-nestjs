@@ -1,4 +1,4 @@
-import { InquiryUserDto } from 'src/entities/dtos/user/user.dto';
+import { EnumUserType, InquiryUserDto } from 'src/entities/dtos/user/user.dto';
 import { IAdminSchema } from 'src/interfaces/schemas/admin.schema.interface';
 import { IApotekerSchema } from 'src/interfaces/schemas/apoteker.schema.interface';
 import { IDokterSchema } from 'src/interfaces/schemas/dokter.schema.interface';
@@ -15,6 +15,7 @@ import { DokterRepository } from '../repositories/typeorm/dokter.repository';
 import { KasirRepository } from '../repositories/typeorm/kasir.repository';
 import { ApotekerRepository } from '../repositories/typeorm/apoteker.repository';
 import { AdminRepository } from '../repositories/typeorm/admin.repository';
+import { In } from 'typeorm';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -26,6 +27,30 @@ export class UserService implements IUserService {
     private readonly kasir_repo?: KasirRepository,
     private readonly admin_repo?: AdminRepository,
   ) {}
+  async findUserTypeByIds(
+    user_type: EnumUserType,
+    inquiry: InquiryUserDto[],
+  ): Promise<
+    [
+      IApotekerSchema[] | IDokterSchema[] | IAdminSchema[] | IKasirSchema[],
+      ErrorBase,
+    ]
+  > {
+    const user_ids = inquiry.map((value) => value.id);
+    const action = {
+      [EnumUserType.APOTEKER]: this.apoteker_repo,
+      [EnumUserType.DOKTER]: this.dokter_repo,
+      [EnumUserType.KASIR]: this.kasir_repo,
+      [EnumUserType.ADMIN]: this.admin_repo,
+    };
+    const role_repo = action[user_type];
+    const roles = await role_repo.find({
+      where: {
+        user_id: In(user_ids),
+      },
+    });
+    return [roles, null];
+  }
   async isSamePassword(
     user: IUserSchema,
     password: string,
@@ -136,9 +161,21 @@ export class UserService implements IUserService {
     const result = await this.user_repo.findOneBy(inquiry);
     return [result, null];
   }
-  async inquiry(inquiry: InquiryUserDto): Promise<[IUserSchema[], ErrorBase]> {
-    return [await this.user_repo.findBy(inquiry), null];
+
+  async inquiry(
+    inquiry: InquiryUserDto | InquiryUserDto[],
+  ): Promise<[IUserSchema[], ErrorBase]> {
+    if (!(inquiry instanceof Array)) {
+      const obat = await this.user_repo.findBy(inquiry);
+      return [obat, null];
+    } else {
+      const obat = await this.user_repo.find({
+        where: inquiry,
+      });
+      return [obat, null];
+    }
   }
+
   async saveToDokter(user: IUserSchema): Promise<[IDokterSchema, ErrorBase]> {
     if (user.id == null) {
       return [, new ValueError('Id harus di assign terlebih dahulu')];

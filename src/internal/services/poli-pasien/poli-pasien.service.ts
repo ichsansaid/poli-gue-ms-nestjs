@@ -7,8 +7,10 @@ import {
 } from 'src/entities/dtos/poli-pasien/poli-pasien.dto';
 import { InquiryPoliDto } from 'src/entities/dtos/poli/poli.dto';
 import { IPoliPasienRepository } from 'src/interfaces/repositories/type-orm/poli-pasien.repository.interface';
+import { IPoliUserRepository } from 'src/interfaces/repositories/type-orm/poli-user.repository.interface';
 import { IPoliPasienSchema } from 'src/interfaces/schemas/poli-pasien.schema.interface';
 import { IPoliPasienService } from 'src/interfaces/services/poli-pasien.service.interface';
+import { IUserService } from 'src/interfaces/services/user.service.interface';
 import { IStringUtil } from 'src/interfaces/utils/string.util.interface';
 import { NotFoundError } from 'src/internal/errors/notfound.error';
 import { ValueError } from 'src/internal/errors/value.error';
@@ -27,6 +29,8 @@ export class PoliPasienService implements IPoliPasienService {
     private readonly dokter_repo: DokterRepository,
     private readonly user_repo: UserRepository,
     private readonly poli_pasien_repo: IPoliPasienRepository,
+    private readonly poli_user_repo: IPoliUserRepository,
+    private readonly user_service: IUserService,
     private readonly string_util: IStringUtil,
   ) {}
   async getLatestPasienData(
@@ -65,10 +69,7 @@ export class PoliPasienService implements IPoliPasienService {
   async getCurrentActivePasien(
     inquiry: InquiryPoliPasienDto,
   ): Promise<[IPoliPasienSchema[], ErrorBase]> {
-    const [, error_cek] = await this.checkInquiryExist(inquiry, [
-      'poli_id',
-      'status',
-    ]);
+    const [, error_cek] = await this.checkInquiryExist(inquiry, ['poli_id']);
     if (error_cek) {
       return [null, error_cek];
     }
@@ -91,6 +92,13 @@ export class PoliPasienService implements IPoliPasienService {
     const dokter = await this.dokter_repo.findOneBy({ id: assign.dokter_id });
     if (dokter == null) {
       throw new NotFoundError('Dokter tidak ditemukan');
+    }
+    const poli_user = await this.poli_user_repo.findOneBy({
+      poli_id: assign.poli_id,
+      user_id: dokter.user_id,
+    });
+    if (poli_user == null) {
+      throw new NotFoundError('Dokter tidak berada di poli tersebut');
     }
     const user = await this.user_repo.findOneBy({
       id: dokter.user_id,
@@ -255,7 +263,6 @@ export class PoliPasienService implements IPoliPasienService {
   async findByPoliId(
     inquiry: InquiryPoliPasienDto | InquiryPoliPasienDto[],
   ): Promise<[IPoliPasienSchema[], ErrorBase]> {
-    console.log(!(inquiry instanceof Array));
     if (!(inquiry instanceof Array)) {
       inquiry = [inquiry];
     }
