@@ -5,6 +5,7 @@ import { PoliPasienTindakanService } from 'src/internal/services/poli-pasien-tin
 import { PoliPasienTindakanRepoModule } from './poli-pasien-tindakan.repo.module';
 import { TindakanServiceModule } from '../tindakan/tindakan.service.module';
 import { PoliPasienServiceModule } from '../poli-pasien/poli-pasien.service.module';
+import { PoliTindakanServiceModule } from '../poli-tindakan/poli-tindakan.service.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { PoliPasienServiceModule } from '../poli-pasien/poli-pasien.service.modu
     PoliPasienServiceModule,
     TindakanServiceModule,
     PoliPasienTindakanRepoModule,
+    PoliTindakanServiceModule,
   ],
   controllers: [],
   providers: [

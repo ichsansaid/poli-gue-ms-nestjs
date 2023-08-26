@@ -9,6 +9,7 @@ import { PoliPasienDeliveryModule } from '../poli-pasien/poli-pasien.delivery.mo
 import { PoliTindakanDeliveryModule } from '../poli-tindakan/poli-tindakan.delivery.module';
 import { PoliUserDeliveryModule } from '../poli-user/poli-user.delivery.module';
 import { PoliPasienTindakanDeliveryModule } from '../poli-pasien-tindakan/poli-pasien-tindakan.delivery.module';
+import { PoliPasienObatDeliveryModule } from '../poli-pasien-obat/poli-pasien-obat.delivery.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PoliPasienTindakanDeliveryModule } from '../poli-pasien-tindakan/poli-p
     PoliUserDeliveryModule,
     PoliTindakanDeliveryModule,
     PoliPasienTindakanDeliveryModule,
+    PoliPasienObatDeliveryModule,
     BearerAuthServiceModule,
     AuthRoleServiceModule,
   ],

@@ -9,6 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CreatePoliObatDto } from 'src/entities/dtos/poli-obat/poli-obat.dto';
+import { ObatPasienDto } from 'src/entities/dtos/poli-pasien-obat/poli-pasien-obat.dto';
 import { TindakanPasienDto } from 'src/entities/dtos/poli-pasien-tindakan/poli-pasien-tindakan.dto';
 import {
   AssignDokterIdDto,
@@ -22,6 +23,7 @@ import {
 } from 'src/entities/dtos/poli-user/poli-user.dto';
 import { CreatePoliDto, UpdatePoliDto } from 'src/entities/dtos/poli/poli.dto';
 import { IPoliObatDelivery } from 'src/interfaces/deliveries/poli-obat.delivery.interface';
+import { IPoliPasienObatDelivery } from 'src/interfaces/deliveries/poli-pasien-obat.delivery.interface';
 import { IPoliPasienTindakanDelivery } from 'src/interfaces/deliveries/poli-pasien-tindakan.delivery.interface';
 import { IPoliPasienDelivery } from 'src/interfaces/deliveries/poli-pasien.delivery.interface';
 import { IPoliTindakanDelivery } from 'src/interfaces/deliveries/poli-tindakan.delivery.interface';
@@ -37,6 +39,7 @@ export class PoliController {
     private readonly poli_tindakan_delivery: IPoliTindakanDelivery,
     private readonly poli_user_delivery: IPoliUserDelivery,
     private readonly poli_pasien_tindakan_delivery: IPoliPasienTindakanDelivery,
+    private readonly poli_pasien_obat_delivery: IPoliPasienObatDelivery,
   ) {}
 
   @Get()
@@ -216,6 +219,55 @@ export class PoliController {
         pasien_id: pasien_id,
         tindakan_id: tindakan_id,
       });
+    if (error != null) {
+      throw error;
+    }
+    return box;
+  }
+
+  @Get(':id/pasien/:pasien_id/obat')
+  async getResepObat(
+    @Param('id') id: string,
+    @Param('pasien_id') pasien_id: string,
+  ): Promise<any> {
+    const [box, error] = await this.poli_pasien_obat_delivery.getAllObat({
+      poli_id: id,
+      pasien_id: pasien_id,
+    });
+    if (error != null) {
+      throw error;
+    }
+    return box;
+  }
+
+  @Post(':id/pasien/:pasien_id/obat')
+  async addObat(
+    @Param('id') id: string,
+    @Param('pasien_id') pasien_id: string,
+    @Body() obat: ObatPasienDto,
+  ): Promise<any> {
+    const [box, error] = await this.poli_pasien_obat_delivery.addObat({
+      poli_id: id,
+      pasien_id: pasien_id,
+      obat_id: obat.obat_id,
+    });
+    if (error != null) {
+      throw error;
+    }
+    return box;
+  }
+
+  @Delete(':id/pasien/:pasien_id/obat/:obat_id')
+  async removeObat(
+    @Param('id') id: string,
+    @Param('pasien_id') pasien_id: string,
+    @Param('obat_id') obat_id: string,
+  ): Promise<any> {
+    const [box, error] = await this.poli_pasien_obat_delivery.removeObat({
+      poli_id: id,
+      pasien_id: pasien_id,
+      obat_id: obat_id,
+    });
     if (error != null) {
       throw error;
     }

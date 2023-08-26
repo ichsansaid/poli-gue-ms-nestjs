@@ -9,6 +9,7 @@ import { IPoliPasienTindakanSchema } from 'src/interfaces/schemas/poli-pasien-ti
 import { ITindakanSchema } from 'src/interfaces/schemas/tindakan.schema.interface';
 import { IPoliPasienTindakanService } from 'src/interfaces/services/poli-pasien-tindakan.service.interface';
 import { IPoliPasienService } from 'src/interfaces/services/poli-pasien.service.interface';
+import { IPoliTindakanService } from 'src/interfaces/services/poli-tindakan.service.interface';
 import { ITindakanService } from 'src/interfaces/services/tindakan.service.interface';
 import { IStringUtil } from 'src/interfaces/utils/string.util.interface';
 import { NotFoundError } from 'src/internal/errors/notfound.error';
@@ -21,6 +22,7 @@ export class PoliPasienTindakanService implements IPoliPasienTindakanService {
     private readonly tindakan_service: ITindakanService,
     private readonly poli_pasien_service: IPoliPasienService,
     private readonly string_utils: IStringUtil,
+    private readonly poli_tindakan_service: IPoliTindakanService,
     private readonly poli_pasien_tindakan_repo: IPoliPasienTindakanRepository,
   ) {}
   async addTindakan(
@@ -53,8 +55,15 @@ export class PoliPasienTindakanService implements IPoliPasienTindakanService {
     if (exist != null) {
       return [, new ValueError('Tindakan tersebut sudah ada')];
     }
+    const [[poli_tindakan]] = await this.poli_tindakan_service.inquiry({
+      tindakan_id: add_tindakan.tindakan_id,
+      poli_id: add_tindakan.poli_id,
+    });
+    if (poli_tindakan == null) {
+      return [, new ValueError('Tindakan tersebut belum ada di Poli')];
+    }
     const data_baru: IPoliPasienTindakanSchema = {
-      id: this.string_utils.hashMd5('poli_pasien'),
+      id: this.string_utils.hashMd5('poli_pasien_tindakan'),
       tindakan_id: add_tindakan.tindakan_id,
       poli_pasien_id: poli_pasien.id,
     };
