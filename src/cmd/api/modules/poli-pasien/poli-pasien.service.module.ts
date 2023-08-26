@@ -5,6 +5,8 @@ import { PoliPasienService } from 'src/internal/services/poli-pasien/poli-pasien
 import { PoliPasienRepoModule } from './poli-pasien.repo.module';
 import { PasienRepoModule } from '../pasien/pasien.repo.module';
 import { PoliRepoModule } from '../poli/poli.repo.module';
+import { DokterRepoModule } from '../dokter/dokter.repo.module';
+import { UserRepoModule } from '../user/user.repo.module';
 
 @Module({
   imports: [
@@ -12,6 +14,8 @@ import { PoliRepoModule } from '../poli/poli.repo.module';
     PoliPasienRepoModule,
     PasienRepoModule,
     PoliRepoModule,
+    DokterRepoModule,
+    UserRepoModule,
   ],
   controllers: [],
   providers: [

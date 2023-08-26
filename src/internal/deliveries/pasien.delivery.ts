@@ -29,10 +29,14 @@ export class PasienDelivery implements IPasienDelivery {
     if (error != null) {
       throw error;
     }
+    const [saved, error_save] = await this.pasien_service.savePasien(result);
+    if (error_save != null) {
+      throw error;
+    }
     return [
       {
         message: 'Pasien berhasil dibuat',
-        data: result,
+        data: saved,
       },
       null,
     ];

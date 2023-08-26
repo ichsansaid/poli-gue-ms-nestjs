@@ -6,6 +6,7 @@ export abstract class IPasienService {
   abstract createPasien(
     create: IPasienSchema,
   ): Promise<[IPasienSchema, ErrorBase]>;
+  abstract savePasien(save: IPasienSchema): Promise<[IPasienSchema, ErrorBase]>;
   abstract updatePasienById(
     id: InquiryPasienDto,
     poli: IPasienSchema,

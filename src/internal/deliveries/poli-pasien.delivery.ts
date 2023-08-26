@@ -1,4 +1,5 @@
 import {
+  AssignDokterDto,
   CreatePoliPasienDto,
   InquiryPoliPasienDto,
 } from 'src/entities/dtos/poli-pasien/poli-pasien.dto';
@@ -9,10 +10,9 @@ import { Box } from '../pkg/box.base';
 import { ErrorBase } from '../pkg/error.base';
 import { Injectable } from '@nestjs/common';
 import { IPasienService } from 'src/interfaces/services/pasien.service.interface';
-import { PasienSchema } from 'src/entities/schemas/pasien.schema';
-import { ValueError } from '../errors/value.error';
 import { IPoliPasienService } from 'src/interfaces/services/poli-pasien.service.interface';
 import { InquiryPasienDto } from 'src/entities/dtos/pasien/pasien.dto';
+import { IDokterSchema } from 'src/interfaces/schemas/dokter.schema.interface';
 
 @Injectable()
 export class PoliPasienDelivery implements IPoliPasienDelivery {
@@ -20,32 +20,53 @@ export class PoliPasienDelivery implements IPoliPasienDelivery {
     private readonly pasien_service: IPasienService,
     private readonly poli_pasien_service: IPoliPasienService,
   ) {}
+
+  async getCurrentDokter(
+    inquiry: InquiryPoliPasienDto,
+  ): Promise<[Box<IDokterSchema>, ErrorBase]> {
+    const [poli_pasien, error] =
+      await this.poli_pasien_service.getCurrentDokter(inquiry);
+    if (poli_pasien == null) {
+      return [null, error];
+    }
+    return [
+      {
+        message: 'Dokter berhasil didapatkan',
+        data: poli_pasien.dokter,
+      },
+      null,
+    ];
+  }
+  async assignDokter(
+    assign: AssignDokterDto,
+  ): Promise<[Box<IPoliPasienSchema>, ErrorBase]> {
+    const [result, error] = await this.poli_pasien_service.assignDokter(assign);
+    if (error != null) {
+      throw error;
+    }
+    return [
+      {
+        message: 'Dokter berhasil di assign',
+        data: result,
+      },
+      null,
+    ];
+  }
+
   async createNewPasien(
     data: CreatePoliPasienDto,
   ): Promise<[Box<IPoliPasienSchema>, ErrorBase]> {
-    const [exist] = await this.poli_pasien_service.findPasienByNamaPasien(
-      {
-        id: data.poli_id,
-      },
-      {
-        nama_lengkap: data.nama_lengkap,
-      },
-    );
-    if (exist != null) {
-      throw new ValueError('Pasien dengan nama tersebut udah tersedia di Poli');
-    }
-    const pasien = new PasienSchema({
+    const [pasien] = await this.pasien_service.createPasien({
       nama_lengkap: data.nama_lengkap,
       alamat: data.alamat,
     });
-    const [task_pasien, error_pasien] =
-      await this.pasien_service.createPasien(pasien);
+    const [, error_pasien] = await this.pasien_service.savePasien(pasien);
     if (error_pasien != null) {
       throw error_pasien;
     }
     const [poli_pasien, error_poli_pasien] =
       await this.poli_pasien_service.createPoliPasien({
-        pasien_id: task_pasien.id,
+        pasien_id: pasien.id,
         poli_id: data.poli_id,
       });
     if (error_poli_pasien != null) {
@@ -87,8 +108,9 @@ export class PoliPasienDelivery implements IPoliPasienDelivery {
     inquiry: InquiryPoliPasienDto,
   ): Promise<[Box<IPasienSchema[]>, ErrorBase]> {
     const [poli_pasien, error_poli_pasien] =
-      await this.poli_pasien_service.findByPoliId({
+      await this.poli_pasien_service.inquiry({
         poli_id: inquiry.poli_id,
+        status: inquiry.status,
       });
     if (error_poli_pasien != null) {
       throw error_poli_pasien;

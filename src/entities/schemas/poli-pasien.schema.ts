@@ -13,13 +13,19 @@ export class PoliPasienSchema extends IPoliPasienSchema {
   @Column('uuid')
   poli_id: any;
 
-  @Column('uuid')
+  @Column({
+    type: 'uuid',
+    nullable: true,
+  })
   dokter_id: any;
 
   @Column('timestamp')
   arrived_at: Date;
 
-  @Column('timestamp')
+  @Column({
+    type: 'timestamp',
+    nullable: true,
+  })
   finished_at: Date;
 
   @Column()

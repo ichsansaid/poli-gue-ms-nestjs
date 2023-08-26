@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsUUID } from 'class-validator';
 
 export enum PoliPasienStatus {
   WAITING = 'waiting',
@@ -12,6 +12,42 @@ export class InquiryPoliPasienDto {
   id?: any;
   pasien_id?: any;
   poli_id?: any;
+  dokter_id?: any;
+  status?: PoliPasienStatus;
+}
+
+export class AssignDokterDto {
+  pasien_id?: any;
+  poli_id?: any;
+  dokter_id?: any;
+}
+
+export class FilterPoliPasienBy {
+  @ApiProperty({
+    required: false,
+  })
+  @IsOptional()
+  @IsEnum(PoliPasienStatus)
+  status?: PoliPasienStatus;
+}
+
+export class GetPoliPasienDokterDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsUUID()
+  pasien_id?: any;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsUUID()
+  poli_id?: any;
+}
+
+export class AssignDokterIdDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsUUID()
+  dokter_id?: string;
 }
 
 export class CreatePoliPasienDto {

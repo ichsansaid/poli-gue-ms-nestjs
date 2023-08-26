@@ -6,9 +6,14 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { CreatePoliObatDto } from 'src/entities/dtos/poli-obat/poli-obat.dto';
-import { CreatePoliPasienDto } from 'src/entities/dtos/poli-pasien/poli-pasien.dto';
+import {
+  AssignDokterIdDto,
+  CreatePoliPasienDto,
+  FilterPoliPasienBy,
+} from 'src/entities/dtos/poli-pasien/poli-pasien.dto';
 import { CreatePoliTindakanDto } from 'src/entities/dtos/poli-tindakan/poli-tindakan.dto';
 import { CreatePoliDto, UpdatePoliDto } from 'src/entities/dtos/poli/poli.dto';
 import { IPoliObatDelivery } from 'src/interfaces/deliveries/poli-obat.delivery.interface';
@@ -96,9 +101,13 @@ export class PoliController {
   }
 
   @Get(':id/pasien')
-  async getAllPasien(@Param('id') id: string): Promise<any> {
+  async getAllPasien(
+    @Param('id') id: string,
+    @Query() filter: FilterPoliPasienBy,
+  ): Promise<any> {
     const [box, error] = await this.poli_pasien_delivery.getAllPasien({
       poli_id: id,
+      ...filter,
     });
     if (error != null) {
       throw error;
@@ -114,6 +123,38 @@ export class PoliController {
     const [box, error] = await this.poli_pasien_delivery.createNewPasien({
       ...create,
       poli_id: id,
+    });
+    if (error != null) {
+      throw error;
+    }
+    return box;
+  }
+
+  @Get(':id/pasien/:pasien_id/dokter')
+  async getPasienDokter(
+    @Param('id') id: string,
+    @Param('pasien_id') pasien_id: string,
+  ): Promise<any> {
+    const [box, error] = await this.poli_pasien_delivery.getCurrentDokter({
+      poli_id: id,
+      pasien_id: pasien_id,
+    });
+    if (error != null) {
+      throw error;
+    }
+    return box;
+  }
+
+  @Post(':id/pasien/:pasien_id/dokter')
+  async assignPasienDokter(
+    @Param('id') id: string,
+    @Param('pasien_id') pasien_id: string,
+    @Body() assign: AssignDokterIdDto,
+  ): Promise<any> {
+    const [box, error] = await this.poli_pasien_delivery.assignDokter({
+      poli_id: id,
+      pasien_id: pasien_id,
+      dokter_id: assign.dokter_id,
     });
     if (error != null) {
       throw error;

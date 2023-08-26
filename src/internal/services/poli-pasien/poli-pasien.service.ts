@@ -6,6 +6,7 @@ import {
   PoliPasienStatus,
 } from 'src/entities/dtos/poli-pasien/poli-pasien.dto';
 import { InquiryPoliDto } from 'src/entities/dtos/poli/poli.dto';
+import { IPoliPasienRepository } from 'src/interfaces/repositories/type-orm/poli-pasien.repository.interface';
 import { IPoliPasienSchema } from 'src/interfaces/schemas/poli-pasien.schema.interface';
 import { IPoliPasienService } from 'src/interfaces/services/poli-pasien.service.interface';
 import { IStringUtil } from 'src/interfaces/utils/string.util.interface';
@@ -14,7 +15,6 @@ import { ValueError } from 'src/internal/errors/value.error';
 import { ErrorBase } from 'src/internal/pkg/error.base';
 import { DokterRepository } from 'src/internal/repositories/typeorm/dokter.repository';
 import { PasienRepository } from 'src/internal/repositories/typeorm/pasien.repository';
-import { PoliPasienRepository } from 'src/internal/repositories/typeorm/poli-pasien.repository';
 import { PoliRepository } from 'src/internal/repositories/typeorm/poli.repository';
 import { UserRepository } from 'src/internal/repositories/typeorm/user.repository';
 import { In } from 'typeorm';
@@ -26,13 +26,59 @@ export class PoliPasienService implements IPoliPasienService {
     private readonly pasien_repo: PasienRepository,
     private readonly dokter_repo: DokterRepository,
     private readonly user_repo: UserRepository,
-    private readonly poli_pasien_repo: PoliPasienRepository,
+    private readonly poli_pasien_repo: IPoliPasienRepository,
     private readonly string_util: IStringUtil,
   ) {}
+  async getLatestPasienData(
+    inquiry: InquiryPoliPasienDto,
+  ): Promise<[IPoliPasienSchema, ErrorBase]> {
+    const [, error_cek] = await this.checkInquiryExist(inquiry, [
+      'poli_id',
+      'pasien_id',
+    ]);
+    if (error_cek) {
+      return [null, error_cek];
+    }
+    const data = await this.poli_pasien_repo.findLatestPasienBy(inquiry);
+    return [data, null];
+  }
+  async getCurrentDokter(
+    inquiry: InquiryPoliPasienDto,
+  ): Promise<[IPoliPasienSchema, ErrorBase]> {
+    const task_dokter = this.dokter_repo.findBy({
+      id: inquiry.dokter_id,
+    });
+    const [[result], error] = await this.getCurrentActivePasien(inquiry);
+    if (result == null) {
+      throw new ValueError('Pasien tidak ditemukan');
+    }
+    if (result.dokter_id == undefined) {
+      throw new ValueError('Pasien tersebut belum memiliki dokter');
+    }
+    [result.dokter] = await task_dokter;
+    result.dokter.user = await this.user_repo.findOneBy({
+      id: result.dokter.user_id,
+    });
+    result.dokter.user.password = '***';
+    return [result, error];
+  }
+  async getCurrentActivePasien(
+    inquiry: InquiryPoliPasienDto,
+  ): Promise<[IPoliPasienSchema[], ErrorBase]> {
+    const [, error_cek] = await this.checkInquiryExist(inquiry, [
+      'poli_id',
+      'status',
+    ]);
+    if (error_cek) {
+      return [null, error_cek];
+    }
+    const poli_pasien = await this.poli_pasien_repo.findActivePasienBy(inquiry);
+    return [poli_pasien, null];
+  }
   async assignDokter(
     assign: AssignDokterDto,
   ): Promise<[IPoliPasienSchema, ErrorBase]> {
-    const poli_pasien = await this.poli_pasien_repo.findOneBy({
+    const [poli_pasien] = await this.poli_pasien_repo.findActivePasienBy({
       pasien_id: assign.pasien_id,
       poli_id: assign.poli_id,
     });
@@ -40,7 +86,7 @@ export class PoliPasienService implements IPoliPasienService {
       return [null, new NotFoundError('Data tidak ditemukan')];
     }
     if (poli_pasien.dokter_id != null) {
-      return [null, new ValueError('Dokter telah ter assign')];
+      return [null, new ValueError('Pasien tersebut sudah memiliki Dokter')];
     }
     const dokter = await this.dokter_repo.findOneBy({ id: assign.dokter_id });
     if (dokter == null) {
@@ -51,12 +97,14 @@ export class PoliPasienService implements IPoliPasienService {
     });
     dokter.user = user;
     poli_pasien.dokter = dokter;
+    poli_pasien.status = PoliPasienStatus.PROGRESS;
     const updated = await this.poli_pasien_repo.update(
       {
         id: poli_pasien.id,
       },
       {
         dokter_id: dokter.id,
+        status: PoliPasienStatus.PROGRESS,
       },
     );
     if (updated.affected == 0) {
@@ -121,22 +169,19 @@ export class PoliPasienService implements IPoliPasienService {
     inquiry_poli: InquiryPoliDto,
     inquiry_pasien: InquiryPasienDto,
   ): Promise<[IPoliPasienSchema, ErrorBase]> {
-    const all_pasien = await this.pasien_repo.findBy({
+    const pasien = await this.pasien_repo.findOneBy({
       nama_lengkap: inquiry_pasien.nama_lengkap,
     });
-    const hash_pasien = {};
-    const pasien_ids = [];
-    for (const pasien of all_pasien) {
-      pasien_ids.push(pasien.id);
-      hash_pasien[pasien.id] = pasien;
+    if (pasien == null) {
+      return [, new NotFoundError('Pasien tidak ditemukan')];
     }
-    const poli = await this.poli_pasien_repo.findOne({
-      where: {
-        pasien_id: In(pasien_ids),
-        poli_id: inquiry_poli.id,
-      },
+    const [poli] = await this.poli_pasien_repo.findBy({
+      pasien_id: pasien.id,
+      poli_id: inquiry_poli.id,
     });
-    poli.pasien = hash_pasien[poli.pasien_id];
+    if (poli != null) {
+      poli.pasien = pasien;
+    }
     return [poli, null];
   }
 
@@ -255,12 +300,6 @@ export class PoliPasienService implements IPoliPasienService {
   ): Promise<[IPoliPasienSchema[], ErrorBase]> {
     if (!(inquiry instanceof Array)) {
       inquiry = [inquiry];
-    }
-    for (const inq of inquiry) {
-      const [, error_cek] = await this.checkInquiryExist(inq, ['pasien_id']);
-      if (error_cek) {
-        return [null, error_cek];
-      }
     }
     const poli_pasien = await this.poli_pasien_repo.find({
       where: inquiry,

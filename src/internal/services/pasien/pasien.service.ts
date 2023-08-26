@@ -14,12 +14,20 @@ export class PasienService implements IPasienService {
     private readonly pasien_repo: PasienRepository,
     private readonly string_utils: IStringUtil,
   ) {}
+  async savePasien(save: IPasienSchema): Promise<[IPasienSchema, ErrorBase]> {
+    if (save.id == null) {
+      throw new ValueError('Id harus di assign sebelum menyimpan');
+    }
+    const pasien = await this.pasien_repo.save(save);
+    return [pasien, null];
+  }
   async createPasien(
     create: IPasienSchema,
   ): Promise<[IPasienSchema, ErrorBase]> {
-    create.id = this.string_utils.hashMd5('pasien');
-    const pasien = await this.pasien_repo.save(create);
-    return [pasien, null];
+    if (create.id == null) {
+      create.id = this.string_utils.hashMd5('pasien');
+    }
+    return [create, null];
   }
   async updatePasienById(
     inquiry: InquiryPasienDto,

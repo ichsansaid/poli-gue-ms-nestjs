@@ -1,4 +1,7 @@
-import { InquiryPoliPasienDto } from 'src/entities/dtos/poli-pasien/poli-pasien.dto';
+import {
+  AssignDokterDto,
+  InquiryPoliPasienDto,
+} from 'src/entities/dtos/poli-pasien/poli-pasien.dto';
 import { IPoliPasienSchema } from '../schemas/poli-pasien.schema.interface';
 import { ErrorBase } from 'src/internal/pkg/error.base';
 import { InquiryPoliDto } from 'src/entities/dtos/poli/poli.dto';
@@ -42,4 +45,16 @@ export abstract class IPoliPasienService {
     inquiry: T,
     column: (keyof T)[],
   ): Promise<[T, ErrorBase]>;
+  abstract assignDokter(
+    assign: AssignDokterDto,
+  ): Promise<[IPoliPasienSchema, ErrorBase]>;
+  abstract getCurrentDokter(
+    inquiry: InquiryPoliPasienDto,
+  ): Promise<[IPoliPasienSchema, ErrorBase]>;
+  abstract getCurrentActivePasien(
+    inquiry: InquiryPoliPasienDto,
+  ): Promise<[IPoliPasienSchema[], ErrorBase]>;
+  abstract getLatestPasienData(
+    inquiry: InquiryPoliPasienDto,
+  ): Promise<[IPoliPasienSchema, ErrorBase]>;
 }
