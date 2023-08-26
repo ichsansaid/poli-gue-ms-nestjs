@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InquiryPasienDto } from 'src/entities/dtos/pasien/pasien.dto';
 import {
+  AssignDokterDto,
   InquiryPoliPasienDto,
   PoliPasienStatus,
 } from 'src/entities/dtos/poli-pasien/poli-pasien.dto';
@@ -8,11 +9,14 @@ import { InquiryPoliDto } from 'src/entities/dtos/poli/poli.dto';
 import { IPoliPasienSchema } from 'src/interfaces/schemas/poli-pasien.schema.interface';
 import { IPoliPasienService } from 'src/interfaces/services/poli-pasien.service.interface';
 import { IStringUtil } from 'src/interfaces/utils/string.util.interface';
+import { NotFoundError } from 'src/internal/errors/notfound.error';
 import { ValueError } from 'src/internal/errors/value.error';
 import { ErrorBase } from 'src/internal/pkg/error.base';
+import { DokterRepository } from 'src/internal/repositories/typeorm/dokter.repository';
 import { PasienRepository } from 'src/internal/repositories/typeorm/pasien.repository';
 import { PoliPasienRepository } from 'src/internal/repositories/typeorm/poli-pasien.repository';
 import { PoliRepository } from 'src/internal/repositories/typeorm/poli.repository';
+import { UserRepository } from 'src/internal/repositories/typeorm/user.repository';
 import { In } from 'typeorm';
 
 @Injectable()
@@ -20,9 +24,46 @@ export class PoliPasienService implements IPoliPasienService {
   constructor(
     private readonly poli_repo: PoliRepository,
     private readonly pasien_repo: PasienRepository,
+    private readonly dokter_repo: DokterRepository,
+    private readonly user_repo: UserRepository,
     private readonly poli_pasien_repo: PoliPasienRepository,
     private readonly string_util: IStringUtil,
   ) {}
+  async assignDokter(
+    assign: AssignDokterDto,
+  ): Promise<[IPoliPasienSchema, ErrorBase]> {
+    const poli_pasien = await this.poli_pasien_repo.findOneBy({
+      pasien_id: assign.pasien_id,
+      poli_id: assign.poli_id,
+    });
+    if (poli_pasien == null) {
+      return [null, new NotFoundError('Data tidak ditemukan')];
+    }
+    if (poli_pasien.dokter_id != null) {
+      return [null, new ValueError('Dokter telah ter assign')];
+    }
+    const dokter = await this.dokter_repo.findOneBy({ id: assign.dokter_id });
+    if (dokter == null) {
+      throw new NotFoundError('Dokter tidak ditemukan');
+    }
+    const user = await this.user_repo.findOneBy({
+      id: dokter.user_id,
+    });
+    dokter.user = user;
+    poli_pasien.dokter = dokter;
+    const updated = await this.poli_pasien_repo.update(
+      {
+        id: poli_pasien.id,
+      },
+      {
+        dokter_id: dokter.id,
+      },
+    );
+    if (updated.affected == 0) {
+      throw new NotFoundError('Data sudah tidak ditemukan');
+    }
+    return [poli_pasien, null];
+  }
   async deletePoliPasienBy(
     inquiry: InquiryPoliPasienDto,
   ): Promise<[IPoliPasienSchema, ErrorBase]> {
@@ -158,9 +199,13 @@ export class PoliPasienService implements IPoliPasienService {
     if (error_cek) {
       return [null, error_cek];
     }
-    await this.poli_pasien_repo.findOneBy({
+    const poli_pasien = await this.poli_pasien_repo.findOneBy({
       id: inquiry.id,
     });
+    if (poli_pasien == null) {
+      return [null, new NotFoundError('Data tidak ditemukan')];
+    }
+    return [poli_pasien, null];
   }
   async findByPoliId(
     inquiry: InquiryPoliPasienDto | InquiryPoliPasienDto[],
