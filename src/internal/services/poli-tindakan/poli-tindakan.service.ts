@@ -94,7 +94,7 @@ export class PoliTindakanService implements IPoliTindakanService {
         poli_id: inquiry_poli.id,
       },
     });
-    poli.tindakan = hash_tindakan[poli.tindakan_id];
+    if (poli != null) poli.tindakan = hash_tindakan[poli.tindakan_id];
     return [poli, null];
   }
 
