@@ -5,11 +5,13 @@ import { AuthTypeEnum } from 'src/entities/dtos/auth/auth.dto';
 import { AuthRoleServiceModule } from '../auth/auth-role.service.module';
 import { PoliObatDeliveryModule } from '../poli-obat/poli-obat.delivery.module';
 import { BearerAuthServiceModule } from '../auth/verify/bearer-auth-verify.service.module';
+import { PoliPasienDeliveryModule } from '../poli-pasien/poli-pasien.delivery.module';
 
 @Module({
   imports: [
     PoliDeliveryModule,
     PoliObatDeliveryModule,
+    PoliPasienDeliveryModule,
     BearerAuthServiceModule,
     AuthRoleServiceModule,
   ],

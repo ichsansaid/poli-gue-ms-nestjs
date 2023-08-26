@@ -8,8 +8,10 @@ import {
   Put,
 } from '@nestjs/common';
 import { CreatePoliObatDto } from 'src/entities/dtos/poli-obat/poli-obat.dto';
+import { CreatePoliPasienDto } from 'src/entities/dtos/poli-pasien/poli-pasien.dto';
 import { CreatePoliDto, UpdatePoliDto } from 'src/entities/dtos/poli/poli.dto';
 import { IPoliObatDelivery } from 'src/interfaces/deliveries/poli-obat.delivery.interface';
+import { IPoliPasienDelivery } from 'src/interfaces/deliveries/poli-pasien.delivery.interface';
 import { IPoliDelivery } from 'src/interfaces/deliveries/poli.delivery.interface';
 
 @Controller('poli')
@@ -17,6 +19,7 @@ export class PoliController {
   constructor(
     private readonly poli_delivery: IPoliDelivery,
     private readonly poli_obat_delivery: IPoliObatDelivery,
+    private readonly poli_pasien_delivery: IPoliPasienDelivery,
   ) {}
 
   @Get()
@@ -80,6 +83,32 @@ export class PoliController {
     @Body() create: CreatePoliObatDto,
   ): Promise<any> {
     const [box, error] = await this.poli_obat_delivery.createNewObat({
+      ...create,
+      poli_id: id,
+    });
+    if (error != null) {
+      throw error;
+    }
+    return box;
+  }
+
+  @Get(':id/pasien')
+  async getAllPasien(@Param('id') id: string): Promise<any> {
+    const [box, error] = await this.poli_pasien_delivery.getAllPasien({
+      poli_id: id,
+    });
+    if (error != null) {
+      throw error;
+    }
+    return box;
+  }
+
+  @Post(':id/pasien')
+  async createPasienPoli(
+    @Param('id') id: string,
+    @Body() create: CreatePoliPasienDto,
+  ): Promise<any> {
+    const [box, error] = await this.poli_pasien_delivery.createNewPasien({
       ...create,
       poli_id: id,
     });
