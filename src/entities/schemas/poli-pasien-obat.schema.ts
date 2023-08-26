@@ -1,6 +1,7 @@
 import { IPoliPasienObatSchema } from 'src/interfaces/schemas/poli-pasien-obat.schema.interface';
-import { Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
+@Entity('poli_pasien_obat')
 export class PoliPasienObatSchema extends IPoliPasienObatSchema {
   @PrimaryGeneratedColumn('uuid')
   id?: any;
@@ -10,4 +11,7 @@ export class PoliPasienObatSchema extends IPoliPasienObatSchema {
 
   @Column('uuid')
   obat_id: any;
+
+  @Column('int4')
+  quantity: number;
 }

@@ -57,6 +57,7 @@ export class PoliPasienObatService implements IPoliPasienObatService {
       id: this.string_utils.hashMd5('poli_pasien_obat'),
       obat_id: add_obat.obat_id,
       poli_pasien_id: poli_pasien.id,
+      quantity: 0,
     };
     const created = await this.poli_pasien_obat_repo.save(data_baru);
     created.obat = obat;
@@ -92,6 +93,7 @@ export class PoliPasienObatService implements IPoliPasienObatService {
       obat_id: remove_obat.obat_id,
       obat: obat,
       poli_pasien_id: poli_pasien.id,
+      quantity: exist.quantity,
     };
     return [data_baru, null];
   }
