@@ -6,8 +6,12 @@ export class StringUtil implements IStringUtil {
   async makeId(unique: any): Promise<string> {
     return v5(unique, v4());
   }
-  async hashMd5(teks: string): Promise<string> {
-    return md5(teks);
+  async hashMd5(teks: string, times: number = 1): Promise<string> {
+    let hashed = teks;
+    for (let i = 0; i < times; i++) {
+      hashed = md5(hashed);
+    }
+    return hashed;
   }
   async snakeToPascalCase(snakeStr: string): Promise<string> {
     return snakeStr

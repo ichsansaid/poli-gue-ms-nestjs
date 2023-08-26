@@ -1,8 +1,12 @@
-import { EntityBase } from 'src/internal/pkgs/schema.base';
+import { EntityBase } from 'src/internal/pkg/schema.base';
 import { IUserSchema } from './user.schema.interface';
 
-export abstract class IApotekerSchema extends EntityBase {
+export class IApotekerSchema extends EntityBase<IApotekerSchema> {
   id: any;
   user_id: any;
   user: IUserSchema;
+
+  constructor(data: Partial<IApotekerSchema>) {
+    super(data);
+  }
 }
