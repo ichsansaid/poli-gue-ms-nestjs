@@ -6,12 +6,14 @@ import { AuthRoleServiceModule } from '../auth/auth-role.service.module';
 import { PoliObatDeliveryModule } from '../poli-obat/poli-obat.delivery.module';
 import { BearerAuthServiceModule } from '../auth/verify/bearer-auth-verify.service.module';
 import { PoliPasienDeliveryModule } from '../poli-pasien/poli-pasien.delivery.module';
+import { PoliTindakanDeliveryModule } from '../poli-tindakan/poli-tindakan.delivery.module';
 
 @Module({
   imports: [
     PoliDeliveryModule,
     PoliObatDeliveryModule,
     PoliPasienDeliveryModule,
+    PoliTindakanDeliveryModule,
     BearerAuthServiceModule,
     AuthRoleServiceModule,
   ],
