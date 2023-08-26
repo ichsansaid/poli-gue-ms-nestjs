@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InquiryTindakanDto } from 'src/entities/dtos/tindakan/tindakan.dto';
 import { ITindakanSchema } from 'src/interfaces/schemas/tindakan.schema.interface';
 import { ITindakanService } from 'src/interfaces/services/tindakan.service.interface';
+import { IObjectUtils } from 'src/interfaces/utils/object.util.interface';
 import { IStringUtil } from 'src/interfaces/utils/string.util.interface';
 import { ValueError } from 'src/internal/errors/value.error';
 import { ErrorBase } from 'src/internal/pkg/error.base';
@@ -13,6 +14,7 @@ export class TindakanService implements ITindakanService {
   constructor(
     private readonly tindakan_repo: TindakanRepository,
     private readonly string_utils: IStringUtil,
+    private readonly object_utils: IObjectUtils,
   ) {}
   async createTindakan(
     create: ITindakanSchema,
@@ -23,7 +25,7 @@ export class TindakanService implements ITindakanService {
   }
   async updateTindakanById(
     inquiry: InquiryTindakanDto,
-    poli: ITindakanSchema,
+    tindakan: ITindakanSchema,
   ): Promise<[ITindakanSchema, ErrorBase]> {
     if (inquiry.id == null) {
       return [, new ValueError('Id harus di assign pada inquiry tindakan dto')];
@@ -34,13 +36,19 @@ export class TindakanService implements ITindakanService {
     if (tindakan_get == null) {
       return [, new ValueError('Tindakan tidak ditemukan')];
     }
-    await this.tindakan_repo.update(
-      {
-        id: inquiry.id,
-      },
-      poli,
+    const updated = await this.object_utils.getDifferentValue(
+      tindakan_get,
+      tindakan,
     );
-    return [tindakan_get, null];
+    if (Object.keys(updated).length > 0) {
+      await this.tindakan_repo.update(
+        {
+          id: inquiry.id,
+        },
+        updated,
+      );
+    }
+    return [updated, null];
   }
   async deleteTindakanById(
     inquiry: InquiryTindakanDto | InquiryTindakanDto[],

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InquiryObatDto } from 'src/entities/dtos/obat/obat.dto';
 import { IObatSchema } from 'src/interfaces/schemas/obat.schema.interface';
 import { IObatService } from 'src/interfaces/services/obat.service.interface';
+import { IObjectUtils } from 'src/interfaces/utils/object.util.interface';
 import { IStringUtil } from 'src/interfaces/utils/string.util.interface';
 import { ValueError } from 'src/internal/errors/value.error';
 import { ErrorBase } from 'src/internal/pkg/error.base';
@@ -13,6 +14,7 @@ export class ObatService implements IObatService {
   constructor(
     private readonly obat_repo: ObatRepository,
     private readonly string_utils: IStringUtil,
+    private readonly object_utils: IObjectUtils,
   ) {}
   async createObat(create: IObatSchema): Promise<[IObatSchema, ErrorBase]> {
     create.id = this.string_utils.hashMd5('obat');
@@ -21,7 +23,7 @@ export class ObatService implements IObatService {
   }
   async updateObatById(
     inquiry: InquiryObatDto,
-    poli: IObatSchema,
+    obat: IObatSchema,
   ): Promise<[IObatSchema, ErrorBase]> {
     if (inquiry.id == null) {
       return [, new ValueError('Id harus di assign pada inquiry obat dto')];
@@ -32,12 +34,15 @@ export class ObatService implements IObatService {
     if (obat_get == null) {
       return [, new ValueError('Obat tidak ditemukan')];
     }
-    await this.obat_repo.update(
-      {
-        id: inquiry.id,
-      },
-      poli,
-    );
+    const updated = await this.object_utils.getDifferentValue(obat_get, obat);
+    if (Object.keys(updated).length > 0) {
+      await this.obat_repo.update(
+        {
+          id: inquiry.id,
+        },
+        updated,
+      );
+    }
     return [obat_get, null];
   }
   async deleteObatById(

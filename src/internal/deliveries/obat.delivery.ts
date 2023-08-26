@@ -50,7 +50,7 @@ export class ObatDelivery implements IObatDelivery {
     }
     return [
       {
-        message: 'Obat berhasil dibuat',
+        message: 'Obat berhasil diperbaharui',
         data: updated,
       },
       null,

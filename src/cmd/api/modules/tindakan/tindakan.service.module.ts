@@ -3,9 +3,10 @@ import { ITindakanService } from 'src/interfaces/services/tindakan.service.inter
 import { StringUtilsModule } from '../utils/string.utils.module';
 import { TindakanRepoModule } from './tindakan.repo.module';
 import { TindakanService } from 'src/internal/services/tindakan/tindakan.service';
+import { ObjectUtilsModule } from '../utils/object.utils.module';
 
 @Module({
-  imports: [StringUtilsModule, TindakanRepoModule],
+  imports: [StringUtilsModule, TindakanRepoModule, ObjectUtilsModule],
   controllers: [],
   providers: [
     {

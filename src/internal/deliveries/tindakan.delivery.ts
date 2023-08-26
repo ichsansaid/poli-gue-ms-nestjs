@@ -49,7 +49,7 @@ export class TindakanDelivery implements ITindakanDelivery {
     }
     return [
       {
-        message: 'Tindakan berhasil dibuat',
+        message: 'Tindakan berhasil diperbaharui',
         data: updated,
       },
       null,

@@ -90,7 +90,7 @@ export class PoliObatService implements IPoliObatService {
         poli_id: inquiry_poli.id,
       },
     });
-    poli.obat = hash_obat[poli.obat_id];
+    if (poli != null) poli.obat = hash_obat[poli.obat_id];
     return [poli, null];
   }
 
