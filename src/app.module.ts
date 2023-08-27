@@ -5,6 +5,7 @@ import { PoliModule } from './cmd/api/modules/poli/poli.module';
 import { ObatModule } from './cmd/api/modules/obat/obat.module';
 import { PasienModule } from './cmd/api/modules/pasien/pasien.module';
 import { TindakanModule } from './cmd/api/modules/tindakan/tindakan.module';
+import { TransactionModule } from './cmd/api/modules/transaction/transaction.module';
 
 @Global()
 @Module({
@@ -15,6 +16,7 @@ import { TindakanModule } from './cmd/api/modules/tindakan/tindakan.module';
     ObatModule,
     PasienModule,
     TindakanModule,
+    TransactionModule,
   ],
   controllers: [],
   providers: [],

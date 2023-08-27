@@ -11,4 +11,9 @@ export class ObatSchema extends IObatSchema {
 
   @Column()
   harga: number;
+
+  @Column({
+    nullable: true,
+  })
+  stok: number;
 }

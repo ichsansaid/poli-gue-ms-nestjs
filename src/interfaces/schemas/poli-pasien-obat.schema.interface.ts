@@ -5,6 +5,7 @@ export abstract class IPoliPasienObatSchema {
   id?: any;
   poli_pasien_id: any;
   obat_id: any;
+  quantity: number;
 
   poli_pasien?: IPoliPasienSchema;
   obat?: IObatSchema;
