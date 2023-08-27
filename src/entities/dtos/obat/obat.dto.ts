@@ -10,6 +10,11 @@ export class CreateObatDto {
   @IsNotEmpty()
   @IsNumber()
   harga: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  stok: number;
 }
 
 export class UpdateObatDto {
@@ -21,6 +26,11 @@ export class UpdateObatDto {
   @IsNotEmpty()
   @IsNumber()
   harga: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  stok: number;
 }
 
 export class InquiryObatDto {

@@ -22,10 +22,7 @@ export class ObatDelivery implements IObatDelivery {
   async createObat(
     create: CreateObatDto,
   ): Promise<[Box<IObatSchema>, ErrorBase]> {
-    const [result, error] = await this.obat_service.createObat({
-      nama_obat: create.nama_obat,
-      harga: create.harga,
-    });
+    const [result, error] = await this.obat_service.createObat(create);
     if (error != null) {
       throw error;
     }

@@ -5,6 +5,7 @@ export class IObatSchema extends EntityBase<IObatSchema> {
   id?: any;
   nama_obat: string;
   harga: number;
+  stok: number;
 
   poli?: IPoliSchema[];
 }
