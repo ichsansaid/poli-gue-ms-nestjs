@@ -4,11 +4,11 @@ import { DataSource } from 'typeorm';
 export async function MainDataSource() {
   const ds = new DataSource({
     type: 'postgres',
-    username: 'postgres',
-    password: 'admin',
-    database: 'poli_gue',
-    host: 'localhost',
-    port: 5432,
+    username: process.env.DATABASE_USERNAME || 'postgres',
+    password: process.env.DATABASE_PASSWORD || 'admin',
+    database: process.env.DATABASE_DB_NAME || 'poli_gue',
+    host: process.env.DATABASE_HOST || 'localhost',
+    port: +process.env.DATABASE_PORT || 5432,
     logging: true,
     synchronize: true,
     entities: [

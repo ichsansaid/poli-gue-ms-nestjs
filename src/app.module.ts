@@ -6,6 +6,7 @@ import { ObatModule } from './cmd/api/modules/obat/obat.module';
 import { PasienModule } from './cmd/api/modules/pasien/pasien.module';
 import { TindakanModule } from './cmd/api/modules/tindakan/tindakan.module';
 import { TransactionModule } from './cmd/api/modules/transaction/transaction.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Global()
 @Module({
@@ -17,6 +18,7 @@ import { TransactionModule } from './cmd/api/modules/transaction/transaction.mod
     PasienModule,
     TindakanModule,
     TransactionModule,
+    ConfigModule.forRoot(),
   ],
   controllers: [],
   providers: [],
